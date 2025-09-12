@@ -1,0 +1,47 @@
+body {
+    font-family: system-ui, sans-serif;
+    background: #0b0b0d;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+p {
+    font-family: system-ui, sans-serif;
+    color: white;
+    font-size: 20px;
+}
+
+#central {
+    margin-right: 65%;
+    font-family: system-ui, sans-serif;
+    background: #00010d;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    min-width: 10%;
+    padding: 10px;
+}
+
+#slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 5px;
+}
+
+#slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 20px;
+    background: gray;
+    cursor: pointer;
+
+}

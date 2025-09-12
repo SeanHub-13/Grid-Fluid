@@ -14,9 +14,19 @@ let cooldown = 50;
 let lastMove = 0;
 let moveCooldown = 35;
 
-let gridSlider = document.querySelector("#slider");
-let gridSliderText = document.querySelector("p");
-let lastSliderValue = gridSlider.value;
+let gridSlider = document.querySelector("#slider1");
+let gridSliderText = document.querySelector("#p1");
+let lastGridSlider = gridSlider.value;
+
+let paintSlider = document.querySelector("#slider2");
+let paintSliderText = document.querySelector("#p2");
+
+let moveSlider = document.querySelector("#slider3");
+let moveSliderText = document.querySelector("#p3");
+
+let lineOpacity = 255;
+let lineSlider = document.querySelector("#slider4");
+let lineSliderText = document.querySelector("#p4");
 
 const grid = {
     columns: 24,
@@ -60,11 +70,12 @@ function preload() {
 
 // Setup runs code on start-up
 function setup() {
-    createCanvas(800, 800);
+    let c = createCanvas(800, 800);
+    c.parent('canvas-container');
     calculateGridSize();
     gridSlider.value = grid.columns;
     gridReset();
-    canvas.oncontextmenu = function (e) { e.preventDefault(); e.stopPropagation(); }
+    canvas.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); }
 };
 
 // Draw runs code every frame
@@ -104,7 +115,7 @@ function createGrid() {
             }
 
             push();
-            stroke(0, 0, 0);
+            stroke(0, 0, 0, lineOpacity);
             rect(x, y, grid.squareW, grid.squareH);
             pop();
 
@@ -167,8 +178,31 @@ function updateLiquids() {
 
                 if (belowIsSolid) {
 
+                    let rightDownEmpty = (i + 1 < grid.columns && j + 1 >= grid.rows && gridArray[i + 1][j + 1] === 0);
+                    let leftDownEmpty = (i - 1 >= grid.columns && j + 1 >= grid.rows && gridArray[i - 1][j + 1] === 0);
+
+                    if (rightDownEmpty || leftDownEmpty) {
+                        if (rightDownEmpty && leftDownEmpty) {
+                            if (Math.random() < 0.5) {
+                                gridArray[i][j] = 0;
+                                gridArray[i + 1][j + 1] = 2;
+                            } else {
+                                gridArray[i][j] = 0;
+                                gridArray[i - 1][j + 1] = 2;
+                            }
+                        }
+                        else if (rightDownEmpty) {
+                            gridArray[i][j] = 0;
+                            gridArray[i + 1][j + 1] = 2;
+                        } else if (leftDownEmpty) {
+                            gridArray[i][j] = 0;
+                            gridArray[i - 1][j + 1] = 2;
+                        }
+                    }
+
                     let rightEmpty = (i + 1 < grid.columns && gridArray[i + 1][j] === 0);
                     let leftEmpty = (i - 1 >= 0 && gridArray[i - 1][j] === 0);
+
 
                     if (rightEmpty || leftEmpty) {
                         if (rightEmpty && leftEmpty) {
@@ -202,20 +236,28 @@ function clickCooldown() {
 
 function movementCooldown() {
     if (millis() - lastMove >= moveCooldown) {
-        lastMove = millis()
-        updateLiquids();
+        lastMove = millis();
+        for (let k = 0; k < 3; k++) { // 3 passes per frame
+            updateLiquids();
+        }
     }
-};
+}
 
 function sliderChecks() {
-    if (gridSlider.value != lastSliderValue) {
+    if (gridSlider.value != lastGridSlider) {
         grid.columns = parseInt(gridSlider.value);
         grid.rows = parseInt(gridSlider.value);
         calculateGridSize();
         gridReset();
-        lastSliderValue = gridSlider.value;
+        lastGridSlider = gridSlider.value;
         gridSliderText.innerText = "Grid Size (" + grid.columns + ")";
     }
+    cooldown = parseInt(paintSlider.value);
+    moveCooldown = parseInt(moveSlider.value);
+    lineOpacity = parseInt(lineSlider.value);
+    paintSliderText.innerText = "Paint Cooldown (" + cooldown + " ms)";
+    moveSliderText.innerText = "Update Cooldown (" + moveCooldown + " ms)";
+    lineSliderText.innerText = "Line Opacity (" + lineOpacity + ")";
 };
 
 //||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\\

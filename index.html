@@ -16,12 +16,21 @@
 
 <body>
     <div id="central">
-        <p>Grid Size</p>
-
-        <input id="slider" type="range" min="1" max="100" value="50">
+        <div id="sidebar">
+            <h1>Fluid Sim</h1>
+            <p id="p1">Grid Size</p>
+            <input class="slider" id="slider1" type="range" min="1" max="100" value="50">
+            <p id="p2">Paint Cooldown</p>
+            <input class="slider" id="slider2" type="range" min="1" max="100" value="50">
+            <p id="p3">Update Cooldown</p>
+            <input class="slider" id="slider3" type="range" min="1" max="100" value="35">
+            <p id="p4">Line Opacity</p>
+            <input class="slider" id="slider4" type="range" min="1" max="255" value="255">
+        </div>
+        <div id="canvas-container">
+            <script src="script.js"></script>
+        </div>
     </div>
-    <h1>Fluid Sim</h1>
-    <script src="script.js"></script>
 </body>
 
 </html>

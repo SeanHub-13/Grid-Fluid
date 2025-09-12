@@ -1,6 +1,6 @@
 body {
     font-family: system-ui, sans-serif;
-    background: #0b0b0d;
+    background: #060614;
     color: white;
     display: flex;
     flex-direction: column;
@@ -11,37 +11,55 @@ body {
 
 p {
     font-family: system-ui, sans-serif;
-    color: white;
+    color: lightcyan;
     font-size: 20px;
 }
 
 #central {
-    margin-right: 65%;
+
     font-family: system-ui, sans-serif;
     background: #00010d;
-    color: white;
+    color: lightblue;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    flex-direction: row;
     border-radius: 10px;
     min-width: 10%;
-    padding: 10px;
+    padding: 50px;
+
 }
 
-#slider {
+#sidebar {
+    width: 250px;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: darkgray;
+    overflow-y: auto;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+#canvas-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ddd;
+}
+
+.slider {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
     height: 5px;
+    background: lightblue;
 }
 
-#slider::-webkit-slider-thumb {
+.slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 10px;
     height: 20px;
-    background: gray;
+    background: whitesmoke;
     cursor: pointer;
 
 }

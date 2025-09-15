@@ -28,6 +28,14 @@ let lineOpacity = 255;
 let lineSlider = document.querySelector("#slider4");
 let lineSliderText = document.querySelector("#p4");
 
+let button1 = document.querySelector("#button1");
+let button2 = document.querySelector("#button2");
+let button3 = document.querySelector("#button3");
+let button4 = document.querySelector("#button4");
+
+let placeShape = 1;
+let placeShapeFinal = null;
+
 const grid = {
     columns: 24,
     rows: 24,
@@ -76,6 +84,7 @@ function setup() {
     gridSlider.value = grid.columns;
     gridReset();
     canvas.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); }
+    buttonListeners();
 };
 
 // Draw runs code every frame
@@ -85,6 +94,7 @@ function draw() {
     createGrid();
     clickCooldown();
     sliderChecks();
+
 };
 
 //||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\\
@@ -115,7 +125,22 @@ function createGrid() {
             }
 
             push();
-            stroke(0, 0, 0, lineOpacity);
+            noStroke();
+            rect(x, y, grid.squareW, grid.squareH);
+            pop();
+
+            push();
+            noFill();
+            let isHovered = mouseX > x && mouseX < x + grid.squareW &&
+                mouseY > y && mouseY < y + grid.squareH;
+
+            if (isHovered) {
+                stroke(0, 0, 0, lineOpacity);
+                fill(255, 0, 0, 50);
+            } else {
+                stroke(0, 0, 0, lineOpacity);
+            }
+
             rect(x, y, grid.squareW, grid.squareH);
             pop();
 
@@ -143,21 +168,81 @@ function keyPressed() {
     console.log(currentPlacement);
 };
 
+function buttonListeners() {
+    button1.onclick = function () { placeShape = 1; };
+    button2.onclick = function () { placeShape = 2; };
+    button3.onclick = function () { placeShape = 3; };
+    button4.onclick = function () { placeShape = 4; };
+};
+
+function whatShape(columnMouse, rowMouse) {
+    placeShapeFinal = [];
+
+    const tryPush = (x, y) => {
+        if (x >= 0 && x < grid.columns && y >= 0 && y < grid.rows) {
+            placeShapeFinal.push({ x, y });
+        }
+    }
+
+    if (placeShape === 1) {
+        // if (gridArray[columnMouse] > -1 && gridArray[rowMouse] > -1) { }
+        tryPush(columnMouse, rowMouse);
+
+    }
+    else if (placeShape === 2) {
+        tryPush(columnMouse, rowMouse);
+        tryPush(columnMouse - 1, rowMouse);
+        tryPush(columnMouse, rowMouse - 1);
+        tryPush(columnMouse - 1, rowMouse - 1);
+    }
+    else if (placeShape === 3) {
+        tryPush(columnMouse, rowMouse);
+        tryPush(columnMouse - 1, rowMouse);
+        tryPush(columnMouse + 1, rowMouse);
+        tryPush(columnMouse, rowMouse - 1);
+        tryPush(columnMouse, rowMouse + 1);
+    }
+    else if (placeShape === 4) {
+        tryPush(columnMouse, rowMouse);
+        tryPush(columnMouse - 1, rowMouse);
+        tryPush(columnMouse + 1, rowMouse);
+        tryPush(columnMouse, rowMouse - 1);
+        tryPush(columnMouse, rowMouse + 1);
+        tryPush(columnMouse + 1, rowMouse + 1);
+        tryPush(columnMouse - 1, rowMouse - 1);
+        tryPush(columnMouse - 1, rowMouse + 1);
+        tryPush(columnMouse + 1, rowMouse - 1);
+    }
+};
+
 function gridClickCheck() {
     if (mouseIsPressed) {
         let columnMouse = Math.floor((mouseX - grid.offsetX) / grid.squareW);
         let rowMouse = Math.floor((mouseY - grid.offsetY) / grid.squareH);
-        if (columnMouse >= 0 && columnMouse < grid.columns && rowMouse >= 0 && rowMouse < grid.rows && mouseX >= grid.offsetX && mouseX <= grid.offsetX + grid.columns * grid.squareW && mouseY >= grid.offsetY && mouseY <= grid.offsetY + grid.rows * grid.squareH) {
-            if (mouseButton === LEFT) {
-                if (currentPlacement === 1) {
-                    gridArray[columnMouse][rowMouse] = 1;
+        if (columnMouse > -1 && rowMouse > -1) {
+            if (columnMouse >= 0 && columnMouse < grid.columns && rowMouse >= 0 && rowMouse < grid.rows && mouseX >= grid.offsetX && mouseX <= grid.offsetX + grid.columns * grid.squareW && mouseY >= grid.offsetY && mouseY <= grid.offsetY + grid.rows * grid.squareH) {
+                whatShape(columnMouse, rowMouse);
+                if (mouseButton === LEFT) {
+
+                    if (currentPlacement === 1) {
+                        // gridArray[columnMouse][rowMouse] = 1;
+                        for (let l of placeShapeFinal) {
+                            gridArray[l.x][l.y] = 1;
+                        }
+                    }
+                    else if (currentPlacement === 2) {
+                        // gridArray[columnMouse][rowMouse] = 2;
+                        for (let l of placeShapeFinal) {
+                            gridArray[l.x][l.y] = 2;
+                        }
+                    }
                 }
-                else if (currentPlacement === 2) {
-                    gridArray[columnMouse][rowMouse] = 2;
+                else if (mouseButton === RIGHT) {
+                    // gridArray[columnMouse][rowMouse] = 0;
+                    for (let l of placeShapeFinal) {
+                        gridArray[l.x][l.y] = 0;
+                    }
                 }
-            }
-            else if (mouseButton === RIGHT) {
-                gridArray[columnMouse][rowMouse] = 0;
             }
         }
     }

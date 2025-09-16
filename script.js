@@ -32,9 +32,15 @@ let button1 = document.querySelector("#button1");
 let button2 = document.querySelector("#button2");
 let button3 = document.querySelector("#button3");
 let button4 = document.querySelector("#button4");
+let pauseButton = document.querySelector("#pause");
+let clearButton = document.querySelector("#clear");
 
 let placeShape = 1;
 let placeShapeFinal = null;
+
+let pause = false;
+
+let shuffledColumns = [];
 
 const grid = {
     columns: 24,
@@ -107,7 +113,6 @@ function calculateGridSize() {
 };
 
 function createGrid() {
-
     for (let i = 0; i < grid.columns; i++) {
         for (let j = 0; j < grid.rows; j++) {
 
@@ -123,7 +128,6 @@ function createGrid() {
             else if (gridArray[i][j] === 2) {
                 fill(grid.fillLiquid.r, grid.fillLiquid.g, grid.fillLiquid.b);
             }
-
             push();
             noStroke();
             rect(x, y, grid.squareW, grid.squareH);
@@ -151,11 +155,21 @@ function createGrid() {
 function gridReset() {
     for (let i = 0; i < grid.columns; i++) {
         gridArray[i] = [];
+        shuffledColumns.push(i);
         for (let j = 0; j < grid.rows; j++) {
             gridArray[i][j] = 0;
         }
     }
 };
+
+function columnShuffle() {
+    for (let m = shuffledColumns.length - 1; m > 0; m--) {
+        let n = Math.floor(Math.random() * (m + 1));
+        let o = shuffledColumns[m];
+        shuffledColumns[m] = shuffledColumns[n];
+        shuffledColumns[n] = o;
+    }
+}
 
 function keyPressed() {
     if (key === '1') {
@@ -173,6 +187,19 @@ function buttonListeners() {
     button2.onclick = function () { placeShape = 2; };
     button3.onclick = function () { placeShape = 3; };
     button4.onclick = function () { placeShape = 4; };
+    pauseButton.onclick = function () {
+        if (pause === true) {
+            pause = false;
+            pauseButton.innerText = "⏸️"
+        }
+        else {
+            pause = true;
+            pauseButton.innerText = "▶️"
+        }
+    };
+    clearButton.onclick = function () {
+        gridReset();
+    };
 };
 
 function whatShape(columnMouse, rowMouse) {
@@ -249,61 +276,64 @@ function gridClickCheck() {
 };
 
 function updateLiquids() {
+    columnShuffle();
     for (let j = grid.rows - 1; j >= 0; j--) {
-        for (let i = 0; i < grid.columns; i++) {
+        for (const i of shuffledColumns) {
             if (gridArray[i][j] === 2) {
-                let belowIsEmpty = (j + 1 < grid.rows && gridArray[i][j + 1] === 0);
-                if (belowIsEmpty) {
-                    gridArray[i][j] = 0;
-                    gridArray[i][j + 1] = 2;
-                    continue;
-                }
+                if (pause === false) {
+                    let belowIsEmpty = (j + 1 < grid.rows && gridArray[i][j + 1] === 0);
+                    if (belowIsEmpty) {
+                        gridArray[i][j] = 0;
+                        gridArray[i][j + 1] = 2;
+                        continue;
+                    }
 
-                let belowIsSolid = (j + 1 >= grid.rows || gridArray[i][j + 1] === 1 || gridArray[i][j + 1] === 2);
+                    let belowIsSolid = (j + 1 >= grid.rows || gridArray[i][j + 1] === 1 || gridArray[i][j + 1] === 2);
 
-                if (belowIsSolid) {
+                    if (belowIsSolid) {
 
-                    let rightDownEmpty = (i + 1 < grid.columns && j + 1 >= grid.rows && gridArray[i + 1][j + 1] === 0);
-                    let leftDownEmpty = (i - 1 >= grid.columns && j + 1 >= grid.rows && gridArray[i - 1][j + 1] === 0);
+                        let rightDownEmpty = (i + 1 < grid.columns && j + 1 >= grid.rows && gridArray[i + 1][j + 1] === 0);
+                        let leftDownEmpty = (i - 1 >= grid.columns && j + 1 >= grid.rows && gridArray[i - 1][j + 1] === 0);
 
-                    if (rightDownEmpty || leftDownEmpty) {
-                        if (rightDownEmpty && leftDownEmpty) {
-                            if (Math.random() < 0.5) {
+                        if (rightDownEmpty || leftDownEmpty) {
+                            if (rightDownEmpty && leftDownEmpty) {
+                                if (Math.random() < 0.5) {
+                                    gridArray[i][j] = 0;
+                                    gridArray[i + 1][j + 1] = 2;
+                                } else {
+                                    gridArray[i][j] = 0;
+                                    gridArray[i - 1][j + 1] = 2;
+                                }
+                            }
+                            else if (rightDownEmpty) {
                                 gridArray[i][j] = 0;
                                 gridArray[i + 1][j + 1] = 2;
-                            } else {
+                            } else if (leftDownEmpty) {
                                 gridArray[i][j] = 0;
                                 gridArray[i - 1][j + 1] = 2;
                             }
                         }
-                        else if (rightDownEmpty) {
-                            gridArray[i][j] = 0;
-                            gridArray[i + 1][j + 1] = 2;
-                        } else if (leftDownEmpty) {
-                            gridArray[i][j] = 0;
-                            gridArray[i - 1][j + 1] = 2;
-                        }
-                    }
 
-                    let rightEmpty = (i + 1 < grid.columns && gridArray[i + 1][j] === 0);
-                    let leftEmpty = (i - 1 >= 0 && gridArray[i - 1][j] === 0);
+                        let rightEmpty = (i + 1 < grid.columns && gridArray[i + 1][j] === 0);
+                        let leftEmpty = (i - 1 >= 0 && gridArray[i - 1][j] === 0);
 
 
-                    if (rightEmpty || leftEmpty) {
-                        if (rightEmpty && leftEmpty) {
-                            if (Math.random() < 0.5) {
+                        if (rightEmpty || leftEmpty) {
+                            if (rightEmpty && leftEmpty) {
+                                if (Math.random() < 0.5) {
+                                    gridArray[i][j] = 0;
+                                    gridArray[i + 1][j] = 2;
+                                } else {
+                                    gridArray[i][j] = 0;
+                                    gridArray[i - 1][j] = 2;
+                                }
+                            } else if (rightEmpty) {
                                 gridArray[i][j] = 0;
                                 gridArray[i + 1][j] = 2;
-                            } else {
+                            } else if (leftEmpty) {
                                 gridArray[i][j] = 0;
                                 gridArray[i - 1][j] = 2;
                             }
-                        } else if (rightEmpty) {
-                            gridArray[i][j] = 0;
-                            gridArray[i + 1][j] = 2;
-                        } else if (leftEmpty) {
-                            gridArray[i][j] = 0;
-                            gridArray[i - 1][j] = 2;
                         }
                     }
                 }

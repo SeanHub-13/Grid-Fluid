@@ -15,6 +15,10 @@ p {
     font-size: 20px;
 }
 
+#toptext {
+    margin: 0px;
+}
+
 #central {
 
     font-family: system-ui, sans-serif;
@@ -24,7 +28,7 @@ p {
     flex-direction: row;
     border-radius: 10px;
     min-width: 10%;
-    padding: 50px;
+    padding: 5px;
 
 }
 
@@ -84,4 +88,21 @@ button:hover {
     background: lightgray;
     box-shadow: 1px 1px 3px gray;
     transition: opacity 0.1s linear;
+}
+
+#pause {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+}
+
+#clear {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+}
+
+#siderbar {
+    display: flex;
+    flex-direction: column;
 }
